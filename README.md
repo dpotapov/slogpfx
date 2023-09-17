@@ -2,6 +2,8 @@
 
 Easily prefix your log messages with attributes from the log record using `slogpfx`.
 
+![demo](demo.png)
+
 ### Features
 
 - Customizable prefix formatter.
