@@ -1,8 +1,10 @@
-package slogpfx
+package slogpfx_test
 
 import (
 	"log/slog"
 	"os"
+
+    "github.com/dpotapov/slogpfx"
 )
 
 func removeTimeAttr(groups []string, a slog.Attr) slog.Attr {
@@ -17,9 +19,9 @@ func Example() {
 	h := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{ReplaceAttr: removeTimeAttr})
 
 	// Set the prefix for all log messages based on attribute "service".
-	prefixed := NewHandler(h, &HandlerOptions{
+	prefixed := slogpfx.NewHandler(h, &slogpfx.HandlerOptions{
 		PrefixKeys:      []string{"service"},
-		PrefixFormatter: DefaultPrefixFormatter,
+		PrefixFormatter: slogpfx.DefaultPrefixFormatter,
 	})
 
 	logger := slog.New(prefixed)
@@ -34,24 +36,24 @@ func Example() {
 	// level=ERROR msg="database > Connection error"
 }
 
-func Example_Multi() {
-	// Create a handler that writes to stdout.
-	h := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{ReplaceAttr: removeTimeAttr})
+func Example_multi() {
+    // Create a handler that writes to stdout.
+    h := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{ReplaceAttr: removeTimeAttr})
 
-	// Set the prefix for all log messages based on attributes "service" and "geo".
-	prefixed := NewHandler(h, &HandlerOptions{
-		PrefixKeys:      []string{"service", "geo"},
-		PrefixFormatter: DefaultPrefixFormatter,
-	})
+    // Set the prefix for all log messages based on attributes "service" and "geo".
+    prefixed := slogpfx.NewHandler(h, &slogpfx.HandlerOptions{
+        PrefixKeys:      []string{"service", "geo"},
+        PrefixFormatter: slogpfx.DefaultPrefixFormatter,
+    })
 
-	logger := slog.New(prefixed)
+    logger := slog.New(prefixed)
 
-	logger.Info("Hello World!")
-	logger.Info("Hello World!", "service", "billing", "geo", "us")
-	logger.With("service", "database", "geo", "eu").Error("Connection error")
+    logger.Info("Hello World!")
+    logger.Info("Hello World!", "service", "billing", "geo", "us")
+    logger.With("service", "database", "geo", "eu").Error("Connection error")
 
-	// Output:
-	// level=INFO msg="Hello World!"
-	// level=INFO msg="billing:us > Hello World!"
-	// level=ERROR msg="database:eu > Connection error"
+    // Output:
+    // level=INFO msg="Hello World!"
+    // level=INFO msg="billing:us > Hello World!"
+    // level=ERROR msg="database:eu > Connection error"
 }
